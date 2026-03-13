@@ -3,465 +3,661 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>访问受限</title>
+    <title>mo运势</title>
+    <link rel="icon" href="https://momo21.online/wp-content/themes/creatorspc/static/favicon/tapedotpink_logo_96x96.jpg" type="image/jpeg">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #010409;
-            --accent-glow: rgba(99, 102, 241, 0.3);
+            --neon-cyan: #00f3ff;
+            --neon-pink: #ff00ff;
+            --neon-purple: #bd00ff;
+            --neon-gold: #ffd700;
+            --bg-dark: #050505;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.1);
         }
 
         * {
             margin: 0; padding: 0; box-sizing: border-box;
-            font-family: 'Inter', -apple-system, sans-serif;
+            cursor: none; /* Hide default cursor */
             user-select: none;
-            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #312e81, #0f172a);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            height: 100vh; width: 100vw;
-            display: flex; align-items: center; justify-content: center;
-            overflow: hidden; perspective: 2000px;
-            touch-action: none;
+            background-color: var(--bg-dark);
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            perspective: 1000px;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        /* --- Canvas Background --- */
+        #bgCanvas {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
         }
 
-        /* --- 背景 --- */
-        #particleCanvas {
-            position: fixed; inset: 0; z-index: 0;
-            opacity: 0.8; pointer-events: none;
+        /* --- Custom Cursor --- */
+        .cursor {
+            position: fixed; width: 20px; height: 20px;
+            border: 2px solid var(--neon-cyan);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 9999;
+            transition: width 0.3s, height 0.3s, background-color 0.3s;
+            mix-blend-mode: difference;
+        }
+        .cursor.hovered {
+            width: 50px; height: 50px;
+            background-color: rgba(0, 243, 255, 0.1);
+            border-color: var(--neon-pink);
+        }
+        .cursor-dot {
+            position: fixed; width: 4px; height: 4px;
+            background-color: white;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 10000;
         }
 
-        .background-aura {
-            position: fixed; inset: 0; z-index: -1;
-            background: 
-                radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.15) 0%, transparent 50%);
-            animation: pulseAura 8s ease-in-out infinite alternate;
+        /* --- Main Container --- */
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+        }
+
+        /* --- Character (Mascot) --- */
+        .mascot-container {
+            position: relative;
+            width: 200px; height: 200px;
+            margin-bottom: 2rem;
+            cursor: pointer;
+            z-index: 30;
+            animation: floatMascot 4s ease-in-out infinite;
+        }
+
+        @keyframes floatMascot {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
         }
         
-        @keyframes pulseAura {
-            0% { opacity: 0.5; transform: scale(1); }
-            100% { opacity: 1; transform: scale(1.1); }
+        .mascot-head {
+            width: 140px; height: 140px;
+            background: radial-gradient(circle at 30% 30%, #2a2a3a, #0f0f15);
+            border: 2px solid var(--neon-cyan);
+            border-radius: 45% 45% 40% 40%;
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s, border-color 0.3s;
+            overflow: hidden;
         }
 
-        .noise-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 1;
-            /* Simple SVG noise */
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.4'/%3E%3C/svg%3E");
-            opacity: 0.08;
+        .mascot-container:hover .mascot-head {
+            transform: translate(-50%, -55%) scale(1.05);
+            box-shadow: 0 0 60px rgba(0, 243, 255, 0.6);
+            border-color: var(--neon-pink);
         }
 
-        /* --- 舞台 --- */
-        .stage { text-align: center; z-index: 10; width: 100%; position: relative; }
-
-        .characters-group {
-            display: flex; align-items: flex-end; justify-content: center;
-            gap: 4rem; margin-bottom: 3rem; height: 320px;
-            will-change: transform;
-        }
-
-        /* --- 角色容器 --- */
-        .char-container {
-            position: relative;
-            display: flex; flex-direction: column; align-items: center;
-        }
-
-        /* --- 对话框 --- */
-        .speech-bubble {
-            position: absolute; bottom: 120%;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 0.7rem 1.4rem;
+        .face-screen {
+            position: absolute; top: 15%; left: 10%; width: 80%; height: 60%;
+            background: #000;
             border-radius: 20px;
-            font-size: 0.9rem; color: white;
-            white-space: nowrap;
-            opacity: 0; transform: translateY(10px) scale(0.8);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            pointer-events: none; z-index: 100;
+            box-shadow: inset 0 0 10px var(--neon-cyan);
+            overflow: hidden;
         }
 
-        .speech-bubble.active { opacity: 1; transform: translateY(0) scale(1); }
+        .eye {
+            position: absolute; top: 35%;
+            width: 25px; height: 35px;
+            background: var(--neon-cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 15px var(--neon-cyan);
+            transition: height 0.1s;
+        }
+        .eye.left { left: 20%; }
+        .eye.right { right: 20%; }
+        
+        .mascot-container:active .eye { height: 5px; top: 50%; } /* Blink on click */
 
-        /* --- 角色核心样式 --- */
-        .character {
-            position: relative; border-radius: 50%;
-            transition: border-radius 0.3s ease;
-            transform-style: preserve-3d;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-            display: flex; align-items: center; justify-content: center;
+        .mouth {
+            position: absolute; bottom: 20%; left: 50%; transform: translateX(-50%);
+            width: 20px; height: 4px; background: var(--neon-cyan);
+            border-radius: 2px;
+            transition: width 0.3s, height 0.3s, border-radius 0.3s;
+        }
+        
+        .mascot-container:hover .mouth {
+            width: 30px; height: 15px; border-radius: 0 0 15px 15px;
+        }
+
+        /* Ears/Antenna */
+        .ear {
+            position: absolute; top: 10px;
+            width: 20px; height: 40px;
+            background: #1a1a20;
+            border: 1px solid var(--neon-pink);
+            z-index: -1;
+            transition: transform 0.3s;
+        }
+        .ear.left { left: 20px; transform: rotate(-15deg); border-radius: 10px 0 0 0; }
+        .ear.right { right: 20px; transform: rotate(15deg); border-radius: 0 10px 0 0; }
+        
+        .mascot-container:hover .ear.left { transform: rotate(-25deg) translateY(-5px); }
+        .mascot-container:hover .ear.right { transform: rotate(25deg) translateY(-5px); }
+
+        /* Speech Bubble */
+        .bubble {
+            position: absolute; top: -100px; left: 50%; transform: translateX(-50%) scale(0);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--neon-cyan);
+            padding: 1rem 1.5rem;
+            border-radius: 20px;
+            color: white;
+            font-size: 1rem;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .bubble::after {
+            content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%);
+            border-width: 10px 10px 0; border-style: solid;
+            border-color: rgba(255, 255, 255, 0.1) transparent transparent transparent;
+        }
+        .bubble.show { opacity: 1; transform: translateX(-50%) scale(1); top: -110px; }
+
+        /* --- Interaction Hint --- */
+        .hint-text {
+            margin-top: 1rem;
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            animation: pulseText 2s infinite;
+        }
+        @keyframes pulseText { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.8; } }
+
+        /* --- Zodiac Selector --- */
+        .zodiac-selector {
+            position: absolute; top: 20px; right: 20px;
+            z-index: 100;
+            display: flex; gap: 10px; align-items: center;
+        }
+        select {
+            background: rgba(0, 0, 0, 0.5);
+            color: var(--neon-cyan);
+            border: 1px solid var(--neon-cyan);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-family: 'Rajdhani', sans-serif;
+            outline: none;
             cursor: pointer;
         }
-
-        .char-main { width: 170px; height: 170px; }
-        .char-side { width: 110px; height: 110px; }
-
-        /* 呼吸动画 */
-        .char-container:nth-child(1) .character { animation: breathe 5s infinite ease-in-out; }
-        .char-container:nth-child(2) .character { animation: breathe 4s infinite ease-in-out -1s; }
-        .char-container:nth-child(3) .character { animation: breathe 6s infinite ease-in-out -2.5s; }
-
-        @keyframes breathe {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-12px); }
+        select option {
+            background: #000;
+            color: white;
         }
 
-        /* 效果状态 */
-        .effect-blank { background: linear-gradient(135deg, #2dd4bf, #0d9488); border: 4px solid #5eead4; }
-        .effect-sad { background: linear-gradient(135deg, #3b82f6, #1d4ed8); border: 4px solid #93c5fd; }
-        .effect-surprised { background: linear-gradient(135deg, #a855f7, #7c3aed); border: 4px solid #ddd6fe; }
-        .effect-angry { background: linear-gradient(135deg, #f87171, #dc2626); border: 4px solid #fecaca; animation: shake 0.1s infinite !important; }
-        
-        @keyframes shake { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(3px, -3px); } }
-
-        /* --- 面部元素 --- */
-        .face { width: 100%; height: 100%; position: relative; pointer-events: none; }
-        
-        .brow-group { position: absolute; top: 25%; width: 70%; left: 15%; display: flex; justify-content: space-between; }
-        .brow { width: 35%; height: 6px; background: #0f172a; border-radius: 4px; transition: transform 0.1s ease-out; }
-
-        .eye-group { position: absolute; top: 38%; width: 66%; left: 17%; display: flex; justify-content: space-between; }
-        .eye { width: 26px; height: 26px; background: white; border-radius: 50%; position: relative; overflow: hidden; }
-        .char-side .eye { width: 18px; height: 18px; }
-        .pupil { width: 12px; height: 12px; background: #0f172a; border-radius: 50%; position: absolute; top: 20%; left: 20%; transition: transform 0.05s linear; }
-
-        .mouth-wrap { position: absolute; bottom: 15%; left: 50%; transform: translateX(-50%); }
-        .mouth-svg { width: 60px; height: 30px; fill: none; stroke: #0f172a; stroke-width: 6; stroke-linecap: round; }
-
-        /* --- 文案 --- */
-        .content { 
-            color: white; margin-top: 3rem; 
-            position: relative;
+        /* --- Header / Title --- */
+        .glitch-wrapper {
+            margin-bottom: 8rem;
+            text-align: center;
+            z-index: 20;
         }
         
-        h1 { 
-            font-size: 4rem; font-weight: 900; 
-            background: linear-gradient(to bottom, #ffffff, #94a3b8); 
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
-            letter-spacing: -2px;
-            filter: drop-shadow(0 0 15px rgba(255,255,255,0.3));
-            animation: floatText 6s ease-in-out infinite;
-        }
-        
-        @keyframes floatText {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        p { 
-            color: #94a3b8; font-size: 1.2rem; margin-top: 1rem; 
-            font-weight: 300; letter-spacing: 2px;
+        .glitch {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4rem;
+            font-weight: 900;
             text-transform: uppercase;
+            position: relative;
+            color: white;
+            letter-spacing: 0.1em;
         }
 
-        /* --- 移动端适配 --- */
+        .glitch::before, .glitch::after {
+            content: attr(data-text);
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+        }
+
+        .glitch::before {
+            left: 2px; text-shadow: -2px 0 var(--neon-pink);
+            clip: rect(24px, 550px, 90px, 0);
+            animation: glitch-anim-1 3s infinite linear alternate-reverse;
+        }
+
+        .glitch::after {
+            left: -2px; text-shadow: -2px 0 var(--neon-cyan);
+            clip: rect(85px, 550px, 140px, 0);
+            animation: glitch-anim-2 2.5s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim-1 {
+            0% { clip: rect(14px, 9999px, 122px, 0); }
+            5% { clip: rect(82px, 9999px, 34px, 0); }
+            10% { clip: rect(10px, 9999px, 88px, 0); }
+            15% { clip: rect(120px, 9999px, 10px, 0); }
+            20% { clip: rect(65px, 9999px, 55px, 0); }
+            100% { clip: rect(0, 0, 0, 0); }
+        }
+        @keyframes glitch-anim-2 {
+            0% { clip: rect(100px, 9999px, 10px, 0); }
+            5% { clip: rect(20px, 9999px, 90px, 0); }
+            10% { clip: rect(50px, 9999px, 30px, 0); }
+            15% { clip: rect(10px, 9999px, 110px, 0); }
+            20% { clip: rect(80px, 9999px, 40px, 0); }
+            100% { clip: rect(0, 0, 0, 0); }
+        }
+
+        /* --- Confetti (Blessing Effect) --- */
+        .confetti {
+            position: absolute; width: 8px; height: 8px; background: var(--neon-gold);
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        /* --- Footer --- */
+        .status-bar {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            padding: 1rem 2rem;
+            display: flex; justify-content: space-between;
+            font-size: 0.8rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            color: var(--neon-cyan);
+            z-index: 20;
+        }
+        
+        .status-item { display: flex; align-items: center; gap: 0.5rem; }
+        .status-dot { width: 8px; height: 8px; background: #0f0; border-radius: 50%; box-shadow: 0 0 5px #0f0; animation: blink 2s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        /* --- Mobile --- */
         @media (max-width: 768px) {
-            .characters-group { gap: 1.2rem; height: 240px; }
-            .char-main { width: 130px; height: 130px; }
-            .char-side { width: 85px; height: 85px; }
-            h1 { font-size: 2rem; }
-            .eye { width: 18px; height: 18px; }
-            .char-side .eye { width: 14px; height: 14px; }
-            .mouth-svg { width: 45px; height: 25px; }
+            .glitch { font-size: 2.5rem; }
+            .mascot-container { width: 160px; height: 160px; }
+            .mascot-head { width: 110px; height: 110px; }
+            .status-bar { display: none; }
         }
-
-        .ripple {
-            position: absolute; border-radius: 50%; background: rgba(255, 255, 255, 0.4);
-            transform: translate(-50%, -50%); pointer-events: none; animation: rippleEffect 0.6s ease-out;
-        }
-        @keyframes rippleEffect { from { width: 0; height: 0; opacity: 1; } to { width: 300px; height: 300px; opacity: 0; } }
     </style>
 </head>
 <body>
-    <canvas id="particleCanvas"></canvas>
-    <div class="background-aura"></div>
-    <div class="noise-overlay"></div>
+    <canvas id="bgCanvas"></canvas>
+    
+    <!-- Custom Cursor -->
+    <div class="cursor"></div>
+    <div class="cursor-dot"></div>
 
-    <div class="stage">
-        <div class="characters-group" id="mainGroup">
-            <div class="char-container">
-                <div class="speech-bubble"></div>
-                <div class="character char-side effect-blank">
-                    <div class="face">
-                        <div class="brow-group"><div class="brow"></div><div class="brow"></div></div>
-                        <div class="eye-group">
-                            <div class="eye"><div class="pupil"></div></div>
-                            <div class="eye"><div class="pupil"></div></div>
-                        </div>
-                        <div class="mouth-wrap"><svg class="mouth-svg" viewBox="0 0 60 30"><path class="mouth-path" d="M 15 15 L 45 15" /></svg></div>
-                    </div>
-                </div>
-            </div>
-            <div class="char-container">
-                <div class="speech-bubble"></div>
-                <div class="character char-main effect-sad">
-                    <div class="face">
-                        <div class="brow-group"><div class="brow"></div><div class="brow"></div></div>
-                        <div class="eye-group">
-                            <div class="eye"><div class="pupil"></div></div>
-                            <div class="eye"><div class="pupil"></div></div>
-                        </div>
-                        <div class="mouth-wrap"><svg class="mouth-svg" viewBox="0 0 60 30"><path class="mouth-path" d="M 10 20 Q 30 5 50 20" /></svg></div>
-                    </div>
-                </div>
-            </div>
-            <div class="char-container">
-                <div class="speech-bubble"></div>
-                <div class="character char-side effect-surprised">
-                    <div class="face">
-                        <div class="brow-group"><div class="brow"></div><div class="brow"></div></div>
-                        <div class="eye-group">
-                            <div class="eye"><div class="pupil"></div></div>
-                            <div class="eye"><div class="pupil"></div></div>
-                        </div>
-                        <div class="mouth-wrap"><svg class="mouth-svg" viewBox="0 0 60 30"><path class="mouth-path" d="M 20 20 A 10 10 0 1 0 40 20" /></svg></div>
-                    </div>
+    <!-- Zodiac Selector -->
+    <div class="zodiac-selector">
+        <label for="zodiac-select" style="color: var(--neon-cyan); font-size: 0.9rem;">选择星座:</label>
+        <select id="zodiac-select">
+            <option value="aries">白羊座 (Aries)</option>
+            <option value="taurus">金牛座 (Taurus)</option>
+            <option value="gemini">双子座 (Gemini)</option>
+            <option value="cancer">巨蟹座 (Cancer)</option>
+            <option value="leo">狮子座 (Leo)</option>
+            <option value="virgo">处女座 (Virgo)</option>
+            <option value="libra">天秤座 (Libra)</option>
+            <option value="scorpio">天蝎座 (Scorpio)</option>
+            <option value="sagittarius">射手座 (Sagittarius)</option>
+            <option value="capricorn">摩羯座 (Capricorn)</option>
+            <option value="aquarius">水瓶座 (Aquarius)</option>
+            <option value="pisces">双鱼座 (Pisces)</option>
+        </select>
+    </div>
+
+    <div class="container">
+        <!-- Title -->
+        <div class="glitch-wrapper">
+            <h1 class="glitch" data-text="momo">你好   探索者</h1>
+        </div>
+
+        <!-- Mascot Character -->
+        <div class="mascot-container hover-trigger" id="mascot">
+            <div class="bubble" id="bubble">你好呀！点击我获取今日好运~</div>
+            <div class="ear left"></div>
+            <div class="ear right"></div>
+            <div class="mascot-head">
+                <div class="face-screen">
+                    <div class="eye left"></div>
+                    <div class="eye right"></div>
+                    <div class="mouth"></div>
                 </div>
             </div>
         </div>
 
-        <div class="content">
-            <h1>ACCESS DENIED</h1>
-            <p>抱歉，你暂时没有访问权限</p>
+        <div class="hint-text" id="daily-fortune">今日运势：请选择星座查看...</div>
+    </div>
+
+    <div class="status-bar">
+        <div class="status-item">
+            <div class="status-dot"></div> SYSTEM ONLINE
+        </div>
+        <div class="status-item">
+            VISITOR: <span id="visitor-id">LUCKY-001</span>
+        </div>
+        <div class="status-item">
+            MOOD: <span id="system-mood">OPTIMISTIC</span>
         </div>
     </div>
 
     <script>
-        // --- 粒子系统 ---
-        const canvas = document.getElementById('particleCanvas');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-        
-        // 交互状态管理
-        let input = { x: -1000, y: -1000 }; // 原始输入坐标
-        let current = { x: window.innerWidth/2, y: window.innerHeight/2 }; // 平滑后的坐标
-        let isMoving = false; // 是否有触摸/鼠标交互
-        let gyroInput = null; // 陀螺仪数据
+        // --- Cursor Logic ---
+        const cursor = document.querySelector('.cursor');
+        const cursorDot = document.querySelector('.cursor-dot');
+        const hoverTriggers = document.querySelectorAll('.hover-trigger');
 
-        function initCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            particles = [];
-            const count = window.innerWidth < 768 ? 50 : 120;
-            for(let i=0; i<count; i++) particles.push({
-                x: Math.random()*canvas.width, y: Math.random()*canvas.height,
-                bx: Math.random()*canvas.width, by: Math.random()*canvas.height,
-                s: Math.random()*2, d: Math.random()*20+5
-            });
-            // 重置坐标
-            current.x = canvas.width / 2;
-            current.y = canvas.height / 2;
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        let cursorX = mouseX;
+        let cursorY = mouseY;
+        let dotX = mouseX;
+        let dotY = mouseY;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        hoverTriggers.forEach(trigger => {
+            trigger.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
+            trigger.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
+        });
+
+        function animateCursor() {
+            // Smooth follow
+            const dt = 0.15;
+            cursorX += (mouseX - cursorX) * dt;
+            cursorY += (mouseY - cursorY) * dt;
+            dotX += (mouseX - dotX) * 0.5; // Dot is faster
+            dotY += (mouseY - dotY) * 0.5;
+
+            cursor.style.left = `${cursorX}px`;
+            cursor.style.top = `${cursorY}px`;
+            cursorDot.style.left = `${dotX}px`;
+            cursorDot.style.top = `${dotY}px`;
+
+            requestAnimationFrame(animateCursor);
         }
-        window.addEventListener('resize', initCanvas);
-        initCanvas();
+        animateCursor();
 
-        function drawParticles() {
-            ctx.clearRect(0,0,canvas.width, canvas.height);
+        // --- Mascot Interaction (Eyes Follow & Click) ---
+        const mascot = document.getElementById('mascot');
+        const eyes = document.querySelectorAll('.eye');
+        const bubble = document.getElementById('bubble');
+        const moodSpan = document.getElementById('system-mood');
+        const zodiacSelect = document.getElementById('zodiac-select');
+        const dailyFortuneText = document.getElementById('daily-fortune');
+
+        // Deterministic Random Function (Seeded by Date + String)
+        function seededRandom(seed) {
+            let h = 0xdeadbeef;
+            for(let i = 0; i < seed.length; i++)
+                h = Math.imul(h ^ seed.charCodeAt(i), 2654435761);
+            h = ((h ^ h >>> 16) >>> 0);
+            return h / 4294967296;
+        }
+
+        // Generate Daily Fortune based on Zodiac
+        function updateDailyFortune() {
+            const selectedZodiac = zodiacSelect.value;
+            const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
             
-            // 目标坐标计算
-            let targetX, targetY;
-            if (isMoving) {
-                targetX = input.x;
-                targetY = input.y;
-            } else if (gyroInput) {
-                targetX = gyroInput.x;
-                targetY = gyroInput.y;
+            const fortuneLevels = ["大吉", "中吉", "小吉", "平", "末吉"];
+            const luckyItems = ["咖啡", "耳机", "绿色植物", "书本", "阳光", "旧照片", "巧克力", "笔记本"];
+            const luckyColors = ["霓虹蓝", "赛博粉", "极光绿", "钛金灰", "星空紫", "深海蓝"];
+            
+            // Generate seed: Date + Zodiac
+            // If no zodiac selected, use a generic seed but vary by day
+            const seedKey = selectedZodiac ? (today + selectedZodiac) : (today + "general");
+            const rand1 = seededRandom(seedKey + "level");
+            const rand2 = seededRandom(seedKey + "item");
+            const rand3 = seededRandom(seedKey + "color");
+
+            const level = fortuneLevels[Math.floor(rand1 * fortuneLevels.length)];
+            const item = luckyItems[Math.floor(rand2 * luckyItems.length)];
+            const color = luckyColors[Math.floor(rand3 * luckyColors.length)];
+
+            if (selectedZodiac) {
+                dailyFortuneText.innerText = `今日运势：${level} | 幸运物：${item} | 幸运色：${color}`;
+                dailyFortuneText.style.color = "var(--neon-cyan)";
             } else {
-                targetX = canvas.width/2;
-                targetY = canvas.height/2;
+                dailyFortuneText.innerText = "今日运势：请选择星座查看...";
+                dailyFortuneText.style.color = "rgba(255,255,255,0.5)";
+            }
+        }
+
+        // Listen for zodiac change
+        zodiacSelect.addEventListener('change', updateDailyFortune);
+        // Initialize
+        updateDailyFortune();
+
+        // Eye tracking
+        document.addEventListener('mousemove', (e) => {
+            const rect = mascot.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
+            const distance = Math.min(10, Math.hypot(e.clientX - centerX, e.clientY - centerY) / 20); // Limit eye movement
+            
+            const x = Math.cos(angle) * distance;
+            const y = Math.sin(angle) * distance;
+
+            eyes.forEach(eye => {
+                eye.style.transform = `translate(${x}px, ${y}px)`;
+            });
+        });
+
+        // Zodiac Fortunes (Mock Data)
+        const zodiacFortunes = {
+            aries: ["今日充满活力，适合挑战新事物！", "热情如火，你的行动力将带来好运。", "财运不错，可能会有意外之喜。", "今日不宜冲动，三思而后行。", "适合运动，释放多余的能量。"],
+            taurus: ["稳扎稳打，你的坚持会有回报。", "享受生活，美食会治愈你的心情。", "财运亨通，适合理财规划。", "固执己见可能会错失良机。", "适合与大自然亲密接触。"],
+            gemini: ["思维敏捷，灵感源源不断。", "沟通顺利，适合结交新朋友。", "好奇心会带你发现新大陆。", "注意力不集中可能会导致失误。", "适合阅读一本新书。"],
+            cancer: ["温柔体贴，你的关怀会温暖他人。", "直觉敏锐，相信你的第一感觉。", "家庭和睦，幸福感爆棚。", "情绪波动较大，需要自我调节。", "适合在家做一顿美味的晚餐。"],
+            leo: ["自信满满，你就是舞台的中心。", "领导力爆棚，适合带领团队冲刺。", "桃花运旺盛，魅力无法挡。", "过于强势可能会招致反感。", "适合参加社交活动。"],
+            virgo: ["细节决定成败，你的严谨备受赞赏。", "效率极高，今日工作事半功倍。", "健康运势佳，保持良好作息。", "过于挑剔可能会得罪人。", "适合整理房间，断舍离。"],
+            libra: ["优雅迷人，社交场合如鱼得水。", "平衡感强，能妥善处理复杂关系。", "艺术灵感迸发，适合创作。", "优柔寡断可能会错失良机。", "适合逛美术馆或听音乐会。"],
+            scorpio: ["神秘莫测，你的洞察力令人惊叹。", "意志坚定，任何困难都难不倒你。", "财运偏好，直觉精准。", "嫉妒心作祟可能会破坏关系。", "适合独处思考，冥想。"],
+            sagittarius: ["自由奔放，一场说走就走的旅行在等你。", "乐观开朗，好运自然来。", "学习运佳，适合拓展新知识。", "粗心大意可能会导致损失。", "适合户外运动，呼吸新鲜空气。"],
+            capricorn: ["踏实肯干，你的努力终将被看见。", "事业运强，升职加薪指日可待。", "规划清晰，目标一步步实现。", "过于严肃可能会让人产生距离感。", "适合制定长期计划。"],
+            aquarius: ["创意无限，你的脑洞能改变世界。", "独立自主，享受独处的时光。", "科技感十足，适合探索新工具。", "特立独行可能会不被理解。", "适合参加科技展或创新论坛。"],
+            pisces: ["浪漫多情，你的梦想即将成真。", "同理心强，善解人意。", "灵感如泉涌，艺术天赋满点。", "逃避现实可能会导致问题堆积。", "适合写日记或绘画。"]
+        };
+
+        // General Blessings (Fallback)
+        const generalBlessings = [
+            "愿你的一天充满阳光和好运！",
+            "接收来自未来的好运信号... 接收成功！",
+            "祝你心想事成，万事如意！",
+            "系统检测：你的快乐指数正在飙升！",
+            "保持热爱，奔赴山海。加油！",
+            "你是独一无二的，闪闪发光！",
+            "今日运势：大吉！会有好事发生哦。",
+            "愿你被这个世界温柔以待。",
+            "能量充满！去创造属于你的奇迹吧。",
+            "记得按时吃饭，照顾好自己哦。"
+        ];
+
+        // Click Handler
+        mascot.addEventListener('click', (e) => {
+            // 1. Determine Message Source
+            const selectedZodiac = zodiacSelect.value;
+            let message = "";
+            
+            if (selectedZodiac && zodiacFortunes[selectedZodiac]) {
+                const fortunes = zodiacFortunes[selectedZodiac];
+                message = `[${selectedZodiac.toUpperCase()}] ${fortunes[Math.floor(Math.random() * fortunes.length)]}`;
+            } else {
+                message = generalBlessings[Math.floor(Math.random() * generalBlessings.length)];
             }
 
-            // 平滑插值 (Lerp)
-            // 交互时更快(0.1)，回正/陀螺仪时更慢更平滑(0.05)
-            const speed = isMoving ? 0.1 : 0.05;
-            current.x += (targetX - current.x) * speed;
-            current.y += (targetY - current.y) * speed;
-
-            // 更新角色状态 (统一在 RAF 中调用以保证流畅)
-            updateCharacters(current.x, current.y);
+            // 2. Show Message
+            bubble.innerText = message;
+            bubble.classList.add('show');
             
-            // Draw connections first (behind particles)
-            ctx.lineWidth = 0.5;
-            for(let i=0; i<particles.length; i++) {
-                for(let j=i+1; j<particles.length; j++) {
-                    let dx = particles[i].x - particles[j].x;
-                    let dy = particles[i].y - particles[j].y;
-                    let dist = Math.sqrt(dx*dx + dy*dy);
-                    
-                    if(dist < 100) {
-                        let opacity = 1 - (dist / 100);
-                        ctx.strokeStyle = `rgba(147, 197, 253, ${opacity * 0.4})`; // blue-300
+            // Auto hide bubble
+            setTimeout(() => {
+                bubble.classList.remove('show');
+            }, 4000); // Slightly longer for zodiac messages
+
+            // 3. Change Mood Text
+            moodSpan.innerText = "PREDICTING...";
+            setTimeout(() => moodSpan.innerText = "OPTIMISTIC", 1500);
+
+            // 4. Confetti Explosion
+            createConfetti(e.clientX, e.clientY);
+        });
+
+        function createConfetti(x, y) {
+            const colors = ['#00f3ff', '#ff00ff', '#bd00ff', '#ffd700', '#ffffff'];
+            for(let i=0; i<30; i++) {
+                const conf = document.createElement('div');
+                conf.classList.add('confetti');
+                document.body.appendChild(conf);
+                
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 150 + 50;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+                
+                conf.style.left = `${x}px`;
+                conf.style.top = `${y}px`;
+                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                conf.style.transition = 'all 0.8s ease-out';
+                
+                // Force reflow
+                conf.offsetHeight;
+
+                conf.style.transform = `translate(${tx}px, ${ty}px) rotate(${Math.random()*360}deg)`;
+                conf.style.opacity = 1;
+
+                setTimeout(() => {
+                    conf.style.opacity = 0;
+                    setTimeout(() => conf.remove(), 800);
+                }, 400);
+            }
+        }
+
+        // --- Canvas Background (Matrix / Particle Flow) ---
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let particles = [];
+        
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            initParticles();
+        }
+        
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.5; 
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.size = Math.random() * 2;
+                this.color = Math.random() > 0.5 ? '#00f3ff' : '#bd00ff';
+                this.baseX = this.x;
+                this.baseY = this.y;
+                this.density = (Math.random() * 30) + 1;
+            }
+
+            update() {
+                // Mouse interaction
+                let dx = mouseX - this.x;
+                let dy = mouseY - this.y;
+                let distance = Math.sqrt(dx*dx + dy*dy);
+                let forceDirectionX = dx / distance;
+                let forceDirectionY = dy / distance;
+                let maxDistance = 250; 
+                let force = (maxDistance - distance) / maxDistance;
+                let directionX = forceDirectionX * force * this.density;
+                let directionY = forceDirectionY * force * this.density;
+
+                if (distance < maxDistance) {
+                    this.x -= directionX;
+                    this.y -= directionY;
+                } else {
+                    if (this.x !== this.baseX) {
+                        let dx = this.x - this.baseX;
+                        this.x -= dx/40; 
+                    }
+                    if (this.y !== this.baseY) {
+                        let dy = this.y - this.baseY;
+                        this.y -= dy/40;
+                    }
+                }
+
+                // Drift
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Bounce off edges
+                if(this.x < 0 || this.x > width) this.vx *= -1;
+                if(this.y < 0 || this.y > height) this.vy *= -1;
+            }
+
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            let numberOfParticles = (width * height) / 10000; 
+            for (let i = 0; i < numberOfParticles; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, width, height);
+            
+            for (let a = 0; a < particles.length; a++) {
+                for (let b = a; b < particles.length; b++) {
+                    let dx = particles[a].x - particles[b].x;
+                    let dy = particles[a].y - particles[b].y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 120) {
+                        ctx.strokeStyle = `rgba(100, 100, 255, ${1 - distance/120})`;
+                        ctx.lineWidth = 0.5;
                         ctx.beginPath();
-                        ctx.moveTo(particles[i].x, particles[i].y);
-                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.moveTo(particles[a].x, particles[a].y);
+                        ctx.lineTo(particles[b].x, particles[b].y);
                         ctx.stroke();
                     }
                 }
+                particles[a].update();
+                particles[a].draw();
             }
-
-            particles.forEach(p => {
-                // 粒子避让使用平滑后的 current 坐标
-                // 只有在有交互或陀螺仪生效时才避让，避免初始状态乱跑
-                let dx = current.x - p.x; let dy = current.y - p.y;
-                let dist = Math.sqrt(dx*dx + dy*dy);
-                
-                // 如果是默认中心点(无交互)，减弱避让效果或不避让
-                // 这里我们选择只要 current 在动就避让
-                if(dist < 150) {
-                    p.x -= (dx/dist)*2; p.y -= (dy/dist)*2;
-                } else {
-                    p.x += (p.bx - p.x)*0.05; p.y += (p.by - p.y)*0.05;
-                }
-                
-                ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.3 + 0.3})`;
-                ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, Math.PI*2); ctx.fill();
-            });
-            requestAnimationFrame(drawParticles);
+            requestAnimationFrame(animateParticles);
         }
-        // 删除这里的 drawParticles() 调用，因为 handleMove 之前是直接调用的，
-        // 但现在我们在下面初始化。不过原代码是在这里调用的。
-        // 我们稍后在脚本末尾统一启动。
+
+        window.addEventListener('resize', resize);
+        resize();
+        animateParticles();
+
+        document.getElementById('visitor-id').innerText = `LUCKY-${Math.floor(Math.random() * 9000) + 1000}`;
         
-        // --- 核心面部交互逻辑 ---
-        const charContainers = document.querySelectorAll('.char-container');
-        const mainGroup = document.getElementById('mainGroup');
-        const effects = ['effect-blank', 'effect-sad', 'effect-surprised', 'effect-angry'];
-
-        // 将原 handleMove 的 DOM 操作逻辑提取为 updateCharacters
-        function updateCharacters(posX, posY) {
-            const normX = (posX - window.innerWidth/2) / (window.innerWidth/2);
-            const normY = (posY - window.innerHeight/2) / (window.innerHeight/2);
-
-            mainGroup.style.transform = `translate(${normX * 15}px, ${normY * 15}px)`;
-
-            charContainers.forEach((container, i) => {
-                const char = container.querySelector('.character');
-                const rect = char.getBoundingClientRect();
-                const cX = rect.left + rect.width/2;
-                const cY = rect.top + rect.height/2;
-                const dist = Math.sqrt(Math.pow(posX - cX, 2) + Math.pow(posY - cY, 2));
-                const proximity = Math.max(0, 1 - dist / 350); // 感应半径 350px
-
-                // 1. 整体倾斜
-                char.style.transform = `rotateX(${-normY * 25}deg) rotateY(${normX * 30}deg)`;
-                
-                // 2. 眼神
-                char.querySelectorAll('.pupil').forEach(p => {
-                    p.style.transform = `translate(${normX * 10}px, ${normY * 10}px)`;
-                });
-
-                // 3. 眉毛挑动 (核心修复：根据接近距离 proximity 实时变化)
-                char.querySelectorAll('.brow').forEach((b, j) => {
-                    const lift = -proximity * 15; // 靠近时眉毛上扬
-                    const tilt = (j === 0 ? -1 : 1) * (normY * 15 + proximity * 20);
-                    b.style.transform = `translateY(${lift}px) rotate(${tilt}deg)`;
-                });
-
-                // 4. 嘴巴变形 (核心修复：实时修改 SVG Path)
-                const mouthPath = char.querySelector('.mouth-path');
-                if(i === 0) { // 左边：拉长
-                    const len = 15 + proximity * 20;
-                    mouthPath.setAttribute('d', `M ${30-len} 15 L ${30+len} 15`);
-                } else if(i === 1) { // 中间：委屈变张嘴
-                    const curve = 5 - proximity * 40; 
-                    mouthPath.setAttribute('d', `M 10 20 Q 30 ${curve} 50 20`);
-                } else if(i === 2) { // 右边：惊讶变大
-                    const r = 5 + proximity * 10;
-                    mouthPath.setAttribute('d', `M ${30-r} 20 A ${r} ${r} 0 1 0 ${30+r} 20 A ${r} ${r} 0 1 0 ${30-r} 20`);
-                }
-                
-                // 5. 身体变形
-                const rVal = 50 - proximity * 15;
-                char.style.borderRadius = `${rVal}% ${rVal}% ${rVal}% ${rVal}%`;
-            });
-        }
-
-        // 输入处理函数
-        function handleInput(x, y) {
-            input.x = x;
-            input.y = y;
-            isMoving = true;
-        }
-
-        window.addEventListener('mousemove', e => handleInput(e.clientX, e.clientY));
-        window.addEventListener('mouseleave', () => { isMoving = false; }); // 鼠标移出复位
-
-        // 触摸事件处理优化
-        window.addEventListener('touchmove', e => {
-            e.preventDefault(); // 防止滚动
-            handleInput(e.touches[0].clientX, e.touches[0].clientY);
-        }, {passive: false});
-
-        window.addEventListener('touchstart', e => {
-            handleInput(e.touches[0].clientX, e.touches[0].clientY);
-        }, {passive: false});
-
-        window.addEventListener('touchend', () => {
-            isMoving = false; // 手指离开后自动复位
-        });
-        
-        // 陀螺仪支持 (可选，增加沉浸感)
-        window.addEventListener('deviceorientation', (e) => {
-            if (!isMoving && e.gamma && e.beta) {
-                // 将陀螺仪数据映射到屏幕坐标
-                // gamma: 左-90 ~ 右90
-                // beta: 上-180 ~ 下180
-                const centerX = window.innerWidth / 2;
-                const centerY = window.innerHeight / 2;
-                const maxTiltX = 30; // 最大倾斜角度范围
-                const maxTiltY = 30;
-
-                let tiltX = Math.max(-maxTiltX, Math.min(maxTiltX, e.gamma));
-                let tiltY = Math.max(-maxTiltY, Math.min(maxTiltY, e.beta - 45)); // 默认手持角度45度
-
-                if (!gyroInput) gyroInput = { x: 0, y: 0 };
-                gyroInput.x = centerX + (tiltX / maxTiltX) * (centerX * 0.8);
-                gyroInput.y = centerY + (tiltY / maxTiltY) * (centerY * 0.8);
-            }
-        });
-
-        // 启动动画
-        drawParticles();
-
-        // 点击反馈
-        charContainers.forEach((container, i) => {
-            const char = container.querySelector('.character');
-            const bubble = container.querySelector('.speech-bubble');
-            const msgs = [
-                ["哎呀！", "别碰我", "唔..."],
-                ["好晕好晕", "呜呜别点我", "你要干嘛"],
-                ["！吓死我了", "哼！", "快停下"]
-            ];
-
-            char.addEventListener('click', (e) => {
-                // 涟漪效果
-                const r = document.createElement('div');
-                r.className = 'ripple';
-                r.style.left = `${e.clientX || e.pageX}px`;
-                r.style.top = `${e.clientY || e.pageY}px`;
-                document.body.appendChild(r);
-                setTimeout(()=>r.remove(), 600);
-
-                // 随机切换状态
-                effects.forEach(eff => char.classList.remove(eff));
-                char.classList.add(effects[Math.floor(Math.random()*effects.length)]);
-
-                // 气泡
-                bubble.innerText = msgs[i][Math.floor(Math.random()*msgs[i].length)];
-                bubble.classList.add('active');
-                setTimeout(()=>bubble.classList.remove('active'), 1500);
-            });
-        });
     </script>
 </body>
 </html>
